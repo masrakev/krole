@@ -1,0 +1,66 @@
+[
+  {
+    "question": "À quelle température nominale fonctionne le réacteur Zorblax ?",
+    "ground_truth": "Le réacteur Zorblax fonctionne à une température nominale de 742 degrés Celsius."
+  },
+  {
+    "question": "Qui a conçu le réacteur Zorblax et en quelle année ?",
+    "ground_truth": "Le réacteur Zorblax a été conçu par l'ingénieure Mireille Vantongeren en 2019."
+  },
+  {
+    "question": "Dans quelle ville le réacteur Zorblax a-t-il été conçu ?",
+    "ground_truth": "Le réacteur Zorblax a été conçu dans la ville de Tampere."
+  },
+  {
+    "question": "Quel carburant est utilisé par le réacteur Zorblax ?",
+    "ground_truth": "Le carburant utilisé est un alliage de thorium et de gadolinium appelé TG-9."
+  },
+  {
+    "question": "Tous les combien de jours la maintenance du réacteur Zorblax doit-elle être effectuée ?",
+    "ground_truth": "La maintenance du réacteur Zorblax doit être effectuée tous les 84 jours."
+  },
+  {
+    "question": "Qu'est-ce qu'Apache Spark ?",
+    "ground_truth": "Apache Spark est un moteur de calcul distribué open-source conçu pour traiter de très grands volumes de données de manière rapide et efficace, notamment grâce au traitement in-memory."
+  },
+  {
+    "question": "Quelle est la version stable la plus récente d'Apache Spark en décembre 2025 ?",
+    "ground_truth": "En décembre 2025, la version stable la plus récente d'Apache Spark est la 4.1.0."
+  },
+  {
+    "question": "Combien Spark peut-il être plus rapide que Hadoop MapReduce pour les workloads itératifs ?",
+    "ground_truth": "Spark peut être jusqu'à 100 fois plus rapide que Hadoop MapReduce pour les workloads itératifs."
+  },
+  {
+    "question": "Qu'est-ce qu'un RDD dans Spark ?",
+    "ground_truth": "Un RDD (Resilient Distributed Dataset) est l'abstraction de base de Spark : une collection distribuée et immuable d'objets, partitionnée sur un cluster et résiliente."
+  },
+  {
+    "question": "Quelles sont les principales caractéristiques d'un RDD ?",
+    "ground_truth": "Un RDD est distribué, immuable, résilient (reconstructible via le lineage) et partitionné."
+  },
+  {
+    "question": "Quel moteur optimise automatiquement les requêtes sur les DataFrames de Spark ?",
+    "ground_truth": "Le moteur Catalyst optimise automatiquement les requêtes sur les DataFrames."
+  },
+  {
+    "question": "Qu'est-ce que l'évaluation paresseuse (lazy evaluation) dans Spark ?",
+    "ground_truth": "L'évaluation paresseuse signifie que les transformations ne sont pas exécutées immédiatement mais seulement lors d'une action, ce qui permet à Spark d'optimiser globalement le plan d'exécution."
+  },
+  {
+    "question": "Quelle est la différence entre les transformations narrow et wide dans Spark ?",
+    "ground_truth": "Les transformations narrow (map, filter, union) n'impliquent pas de shuffle : chaque partition parent contribue à au plus une partition enfant, ce qui rend l'exécution locale et rapide. Les transformations wide (groupByKey, reduceByKey, join) impliquent un shuffle, donc des transferts réseau et disque coûteux."
+  },
+  {
+    "question": "Quel est le rôle du Driver Program dans l'architecture de Spark ?",
+    "ground_truth": "Le Driver Program est le programme principal qui définit les transformations et les actions, contient le SparkContext/SparkSession, et est responsable de la création du DAG, de la planification des jobs et de la communication avec le cluster manager."
+  },
+  {
+    "question": "Sur quel port le Spark UI est-il accessible par défaut ?",
+    "ground_truth": "Le Spark UI est accessible par défaut sur le port 4040 (ou 8080 sur les clusters)."
+  },
+  {
+    "question": "Quelles grandes entreprises utilisent Apache Spark en production ?",
+    "ground_truth": "Des entreprises majeures comme Netflix, Uber, Airbnb, le CERN et la NASA utilisent Apache Spark en production."
+  }
+]

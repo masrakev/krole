@@ -1,0 +1,100 @@
+services:
+  backend:
+    build: ./backend
+    container_name: rag_backend
+    ports:
+      - "8000:8000"
+    environment:
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://ollama:11434}
+      CHROMA_HOST: ${CHROMA_HOST:-chroma}
+      CHROMA_PORT: ${CHROMA_PORT:-8000}
+      MISTRAL_MODEL: ${MISTRAL_MODEL:-mistral}
+      EMBED_MODEL: ${EMBED_MODEL:-bge-m3}
+      # Fournisseur de génération (local-first : cloud uniquement si LLM_PROVIDER
+      # le demande ET que la clé correspondante est renseignée).
+      LLM_PROVIDER: ${LLM_PROVIDER:-mistral}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
+      CLAUDE_MODEL: ${CLAUDE_MODEL:-claude-opus-4-8}
+      # Inférence (CPU). NUM_THREAD = nb de cœurs physiques de la machine.
+      NUM_THREAD: ${NUM_THREAD:-8}
+      NUM_CTX: ${NUM_CTX:-2048}
+      KEEP_ALIVE: ${KEEP_ALIVE:-30m}
+      NUM_PREDICT: ${NUM_PREDICT:-96}
+      # Rerank désactivé par défaut (profil démo) : -20 s/requête, -2,3 Go RAM.
+      RERANK_ENABLED: ${RERANK_ENABLED:-false}
+      # Mode vocal (CPU). Modèles PETITS pour rester dans le budget RAM.
+      STT_MODEL: ${STT_MODEL:-small}
+      STT_COMPUTE_TYPE: ${STT_COMPUTE_TYPE:-int8}
+      STT_LANGUAGE: ${STT_LANGUAGE:-}
+      TTS_VOICE: ${TTS_VOICE:-fr_FR-siwis-medium}
+      # Cache des modèles HuggingFace (reranker cross-encoder) persisté dans le
+      # volume models_cache → téléchargé UNE fois, rechargé du disque ensuite.
+      # On couvre toutes les libs : huggingface_hub, transformers,
+      # sentence-transformers, FlagEmbedding lisent ces variables.
+      HF_HOME: /models
+      HF_HUB_CACHE: /models
+      TRANSFORMERS_CACHE: /models
+      SENTENCE_TRANSFORMERS_HOME: /models
+    volumes:
+      - ./backend:/app
+      - uploads_data:/data
+      - models_cache:/models
+    depends_on:
+      - chroma
+      - ollama
+    networks:
+      - rag_net
+
+  frontend:
+    build: ./frontend
+    container_name: rag_frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      # WORKDIR /usr/src/app (pas /app) : évite la collision entre la route
+      # "/app" du SPA et le répertoire racine servi par le dev server Vite.
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - rag_net
+
+  chroma:
+    image: chromadb/chroma:1.0.0
+    container_name: rag_chroma
+    ports:
+      - "8001:8000"
+    volumes:
+      - chroma_data:/data
+    networks:
+      - rag_net
+
+  ollama:
+    image: ollama/ollama
+    container_name: rag_ollama
+    ports:
+      - "11434:11434"
+    # Aucune limite CPU (pas de cpus:/cpuset:/deploy.resources) : Ollama doit
+    # pouvoir saturer les 8 cœurs physiques pour la génération CPU.
+    environment:
+      # 1 requête à la fois → elle obtient TOUS les threads (pas de répartition).
+      OLLAMA_NUM_PARALLEL: "1"
+      # Garde le modèle chargé en RAM entre les requêtes.
+      OLLAMA_KEEP_ALIVE: 30m
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - rag_net
+
+networks:
+  rag_net:
+    driver: bridge
+
+volumes:
+  chroma_data:
+  ollama_data:
+  uploads_data:
+  models_cache:

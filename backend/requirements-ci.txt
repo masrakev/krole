@@ -1,0 +1,18 @@
+# Dépendances LÉGÈRES pour la CI : juste de quoi IMPORTER l'app et lancer les
+# tests, sans les poids lourds (torch/transformers/ragas/whisper/piper) qui ne
+# sont importés que paresseusement (et sont mockés dans les tests).
+fastapi==0.115.9
+uvicorn[standard]==0.34.0
+httpx==0.28.1
+pydantic==2.10.4
+pydantic-settings==2.14.1
+python-multipart==0.0.20
+pypdf==5.1.0
+python-docx==1.1.2
+langchain-text-splitters==0.3.11
+chromadb==1.0.0
+rank-bm25==0.2.2
+
+# Outils de test / lint.
+pytest==8.3.4
+ruff==0.8.4

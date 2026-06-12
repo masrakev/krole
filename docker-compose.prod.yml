@@ -1,0 +1,90 @@
+# Production stack — image backend baked (pas de montage du code), frontend
+# servi statiquement par nginx (gzip + fallback SPA). Volumes persistants pour
+# les modèles, la base vectorielle et les fichiers uploadés.
+#
+#   docker compose -f docker-compose.prod.yml up -d --build
+#
+# Puis (une seule fois) tirer les modèles dans le conteneur ollama :
+#   docker exec -it rag_ollama ollama pull mistral
+#   docker exec -it rag_ollama ollama pull bge-m3
+
+services:
+  backend:
+    build: ./backend
+    image: krole-backend
+    container_name: rag_backend
+    restart: unless-stopped
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 1
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      OLLAMA_BASE_URL: http://ollama:11434
+      CHROMA_HOST: chroma
+      CHROMA_PORT: "8000"
+      # Cache des modèles HuggingFace / faster-whisper persisté dans le volume.
+      HF_HOME: /models
+      HF_HUB_CACHE: /models
+      TRANSFORMERS_CACHE: /models
+      SENTENCE_TRANSFORMERS_HOME: /models
+    volumes:
+      - uploads_data:/data
+      - models_cache:/models
+    depends_on:
+      - chroma
+      - ollama
+    networks:
+      - rag_net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+      args:
+        # URL atteinte par le NAVIGATEUR (donc l'hôte), pas le réseau Docker.
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000}
+    image: krole-frontend
+    container_name: rag_frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    networks:
+      - rag_net
+
+  chroma:
+    image: chromadb/chroma:1.0.0
+    container_name: rag_chroma
+    restart: unless-stopped
+    ports:
+      - "8001:8000"
+    volumes:
+      - chroma_data:/data
+    networks:
+      - rag_net
+
+  ollama:
+    image: ollama/ollama
+    container_name: rag_ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    environment:
+      OLLAMA_NUM_PARALLEL: "1"
+      OLLAMA_KEEP_ALIVE: 30m
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - rag_net
+
+networks:
+  rag_net:
+    driver: bridge
+
+volumes:
+  chroma_data:
+  ollama_data:
+  uploads_data:
+  models_cache:
