@@ -47,7 +47,4 @@ data/
 .idea/
 .DS_Store
 Thumbs.db
-CLAUDE.md
 
-# ---- Claude Code (réglages locaux à la machine) ----
-.claude/settings.local.json
