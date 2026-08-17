@@ -214,7 +214,7 @@ Le script de présentation guidée (~10 min) est dans [DEMO.md](DEMO.md).
 
 ## Captures d'écran
 
-> _À venir — placez les captures dans `docs/screenshots/`._
+> _À venir — les captures dans `docs/screenshots/`._
 
 | Vue | Aperçu |
 | --- | ------ |
